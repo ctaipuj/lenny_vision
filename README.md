@@ -1,4 +1,4 @@
-# vision_for_lenny Package 
+# lenny_vision Package 
 ### Developed by Nicolas Barrero 2017
 
 This package integrates a computer vision algorithm with ROS's moveit! to perform a waste separation task (Sorting of plastic bottles)
