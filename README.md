@@ -2,6 +2,7 @@
 ### Developed by Nicolas Barrero 2017
 
 This package integrates a computer vision algorithm with ROS's moveit! to perform a waste separation task (Sorting of plastic bottles)
+See documented_code folder for further information.
 
 ## NOTE
 

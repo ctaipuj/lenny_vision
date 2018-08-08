@@ -1,0 +1,109 @@
+#ifndef SPATIAL_COORD
+#define SPATIAL_COORD
+
+#include<opencv2/core/core.hpp>
+#include<opencv2/highgui/highgui.hpp>
+#include<opencv2/imgproc/imgproc.hpp>
+
+#include<iostream>
+#include<math.h>
+
+//! A class dedicated to pose estimation
+
+/*!
+	This class is focused in pose estimation, with a contour detected this class allows the user to estimate its 3D pose using the depth data from a kinect sensor and the rgb image.
+*/
+
+class space{
+	
+	private:
+	
+	public:
+	//!Class constructor
+	space();
+	//!Member that finds the object centroid
+	/*!
+		This function calculates moments to estimate the centroid (in pixels) of the object detected
+		\param contornos a vector<vector<cv::Point> > its a vector containing a group 
+		\return A vector<cv::Point> that store the centroids of the objects detected
+	*/	
+	std::vector<cv::Point> getpoints(std::vector<std::vector<cv::Point> > contornos);
+	//!Member that finds the corresponding Point in the depth image of the data found in the rgb image
+	/*!
+		This function matches the pixels of the rgb image centroids to the depth image pixels so the data can be compared between the both images.
+		\param Points a vector<cv::Points> that stores the original points of the rbg image that contains the centroids of the objects
+		\param originalcols a integer number of columns of the rgb image
+		\param originalrows a integer number of rows of the rgb image
+		\param tinycols a integer number of columns of the depth image
+		\param tinyrows a integer number of rows of the depth image
+		\return a vector<cv::Point> that stores the pixels of the centroids matched to the depth image
+		\sa getpoints
+	*/
+	std::vector<cv::Point> scale(std::vector<cv::Point> Points,int  originalcols, int originalrows, int tinycols, int tinyrows);
+	//!Member that finds the depth of and object using kinect's depth data.
+	/*!
+		This funtion uses a point of an image (pixel location) to find its corresponding depth data in other image. Then it gather the pixel location and the depth data in a mixed-coordinate frame, where P(x,y) is the position of the pixel in the image and z is the real depth of the object.
+		
+		\param Points_scaled a vector of cv::Point elements that are the location of the pixels of interest.
+		\param Points_real a vector of cv::Point with the non-scaled (x,y) points.
+		\param depth a cv::Mat that stores the depth data.
+		\return a vector<vector<double> > That stores the 3D point P(x,y,z) which x,y are in pixel coordinates and z in real ones.
+		\sa getpoints, scale
+	*/ 
+	std::vector<std::vector<double> > find_depth(std::vector<cv::Point> Points_scaled,std::vector<cv::Point> Points_real,cv::Mat depth);
+	//!Member that takes the mixed-coordinate frame and translates it to a real coordinate system.
+	/*!
+		This function takes the mixed-coordinate frame and convert it to a real coordinate frame with the kinect sensor as the reference point
+		\param Points a vector<vector<double> > of (x,y,z) points in a mixed-coordinate system
+		\param fx focal length in x-axis expressed in pixels
+		\param fy focal lenght in y-axis expressed in pixels
+		\param cx Point in x-axis of the origin of the image
+		\param cy Point in y-axis of the origin of the image
+		\return a vector<vector<double > > That stores the 3D point (x,y,z) in the real space coordinates frame whith the sensor as reference point.
+		*/
+	std::vector<std::vector<double> > xyz_coord(std::vector<std::vector<double> > Points, double fx, double fy, double cx, double cy);
+	//!Member that gathers all the information of the detected object
+	/*!
+		This function gathers the pose estimation information and other geometry data preparing it to send in a structured ROS message.
+		It sends (X,Y,Z) location,(x,y,z,w) rotation,width,length and bottle type.
+		\param kinect_xyz as a vector<vector<double> > that stores the real coordinates in (x,y,z) of the centroid of the object.
+		\param contornos as a vector<vector<cv::Point> > which are the contours of the objects.
+		\param bottle_type a int that is 1 when colored-HDPE, 2 when colored-PET and 3 when HDPE.
+		\param fx focal length in x-axis expressed in pixels
+		\param fy focal lenght in y-axis expressed in pixels
+		\param cx Point in x-axis of the origin of the image
+		\param cy Point in y-axis of the origin of the image
+		\return a vector<vector<double> > with all the characteristics and the information of the detected objects.
+		\sa getpoints, find_depth, push_data
+		*/
+	std::vector<std::vector<double> > getgeometrydata(std::vector<std::vector<double> > kinect_xyz, std::vector<std::vector<cv::Point> > contornos, int bottle_type,double fx, double fy, double z);
+	//!Member that do a transformation in the way the orientation of an object is described.
+	/*!
+		This function convert euler angles (roll, pitch and yaw) in quaternion.
+		\param roll roll
+		\param pitch pitch
+		\param yaw yaw
+		\return a vector<double> which contains (x,y,z,w)
+		\sa getgeometrydata
+	*/	
+	std::vector<double> getquaternion(double roll, double pitch, double yaw);
+	//!Member that gathers all the information in a vector ready to be send through ROS.
+	/*!
+		This function gathers all the information of each type of bottle to create a vector with all the available data.
+		\param color is the getgeometrydata of color bottles
+		\param green is the getgeometrydata of green bottles
+		\param white is the getgeometrydata of white bottles
+		\return a vector<vector<double> > with all the data of the detected objects
+		\sa getgeometrydata, pusher
+		*/
+	std::vector<std::vector<double> > push_data(std::vector<std::vector<double> > color,std::vector<std::vector<double> > green, std::vector<std::vector<double> > white);
+	//!Member that actually push the different data in a single vector
+	/*!
+		This function pushes the data of the different bottles into a vector that stores the information to be send to ROS
+		\param A is the getgeometrydata vector
+		\param data_to_ros is the vector where the information is being gathered.
+	*/
+	void pusher(std::vector<std::vector<double> > & A, std::vector<std::vector<double> > &data_to_ros);
+	
+};
+#endif

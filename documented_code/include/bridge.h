@@ -1,0 +1,100 @@
+#ifndef ROS_TO_CV
+#define ROS_TO_CV
+
+#include <ros/ros.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <vision/bottle_data.h>
+#include <std_msgs/UInt32.h>
+#include <tf/transform_listener.h>
+#include <tf_conversions/tf_eigen.h>
+
+#include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/PoseStamped.h>
+
+#include <fstream>
+#include <string>
+#include <ctime>
+
+//! A pointer to manage ROS communication
+/*! Pointer that allows ROS communication of space transformations*/
+typedef boost::shared_ptr<tf::TransformListener> TransformListenerPtr; 
+	
+//! A class dedicated to do ROS data management
+
+/*!This class manage ROS image-raw data convertion into OpenCV Mat data structure. Also, it stablishes the communication between different ROS nodes to process image data into spatial coordinates*/
+class ImageConverter{
+  
+  //! Mat structure for color_data
+  /*! Stores rgb_ros data transformed into BGR_opencv data*/
+  cv::Mat A_color;
+  //! Mat structure for color_data
+  /*! Stores depth_ros data transformed into depth_opencv data*/
+  cv::Mat B_depth;
+  
+  //! Handle a node in ros
+  ros::NodeHandle nh_;
+  //! Trasnport ros image data
+  image_transport::ImageTransport it_;
+  //! subscribe to color ros data
+  image_transport::Subscriber image_sub_color;
+  //! subscribe to depth ros data
+  image_transport::Subscriber image_sub_depth;
+  //! My publisher
+  ros::Publisher pub; 
+  //! My subscriber
+  ros::Subscriber sub;
+
+public:
+
+  //! A pointer to manage ROS communication
+/*! Pointer that allows ROS communication of space transformations*/
+  TransformListenerPtr transform_listener_ptr;
+  //!Class constructor
+  ImageConverter();
+  //!Class destructor
+  ~ImageConverter();
+  //!Member that waits for confirmation data to execute code
+  /*!
+  	Starts the image processing.
+  	\param msg as a std::msgs::UInt32 message from ROS that is 1 when the robot sends the execution confirmation.
+  */
+  void lenny_asks_callback(const std_msgs::UInt32& msg);
+  //!Member that subscribes the node to the RGB ros data
+  /*!
+  	Subscribe the node to rgb ros data and translates it into BGR openCV data
+  	\param color_msg as a sensor_msgs::ImageConstPtr that recieves color data from the sensor.
+  */
+  void kinect_color_callback(const sensor_msgs::ImageConstPtr& color_msg);
+  //!Member that subscribes the node to the depth ros data
+  /*!
+  	Subscribe the node to depth ros data and translates it into depth openCV data
+  	\param depth_msg as a sensor_msgs::ImageConstPtr that recieves color data from the sensor.
+  */
+  void kinect_depth_callback(const sensor_msgs::ImageConstPtr& depth_msg); 
+  //!Member that executes the computer vision algorithm.
+  /*!
+  	Returns the data_to_ros vector that is a spatial coordinates frame in XYZ and quaternions among other data of interest for the system.
+  	\sa computer_vision, kinect_depth_callback, kinect_color_callback, lenny_asks_callback
+  */
+  void computer_vision(std::vector<std::vector<double> > &data_to_ros);
+  //!Member that publishes to ros the data found by the computer vision algorithm
+  /*!
+  	Publishes the spatial coordinates data to ros and other information to the system.
+  	\param data_to_ros as a vector<double> that stores the information of the detection
+  	\sa selector
+  */
+  void publisher(std::vector<std::vector<double> > &data_to_ros);
+  //!Member that select the data that its going to be published to ros
+  /*!
+  	Select the data to publish 
+  	\param data_to_ros as a vector<vector<double> > that are all the detections found
+  	\return A vector of data that actually is going to be published to ros
+  */
+  std::vector<double> selector(std::vector<std::vector<double> > data_to_ros);
+};
+
+#endif

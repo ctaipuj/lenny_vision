@@ -1,0 +1,29 @@
+#ifndef TEST_CLASS
+#define TEST_CLASS
+
+#include<opencv2/core/core.hpp>
+#include<opencv2/highgui/highgui.hpp>
+#include<opencv2/imgproc/imgproc.hpp>
+
+#include<iostream>
+#include<math.h>
+
+//! A class that is used when the framework is tested.
+/*!
+	This class is used when the computer vision algorithm is tested in a loop mode to analize a library of images.
+	*/
+	
+class test{
+	private:
+	
+	public:
+	//! A class constructor
+	/*! Class constructor*/
+	test();	
+	//! Member that 
+	std::vector<double> get_data(int cols,int rows,std::vector<std::vector<cv::Point> > contornos,int band);
+	
+	std::vector<double> get_data_to_print(std::vector<double> color,std::vector<double> green, std::vector<double> white, int image,int band);
+
+};
+#endif
