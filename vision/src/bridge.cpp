@@ -13,7 +13,7 @@ std::ofstream myfile;
 ImageConverter::ImageConverter()
 	: it_(nh_)
 {
-	// Subscrive to input video feed and publish output video feed
+	// Subscribe to input video feed and publish output video feed
 	image_sub_color = it_.subscribe("/camera/rgb/image_color", 1, &ImageConverter::kinect_color_callback, this);
 	image_sub_depth = it_.subscribe("/camera/depth_registered/image", 1, &ImageConverter::kinect_depth_callback, this);
 	sub = nh_.subscribe("/fake_k_roll", 30,  &ImageConverter::lenny_asks_callback,this); ///pick_and_place/command
