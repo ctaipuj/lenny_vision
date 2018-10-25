@@ -63,6 +63,9 @@ target_link_libraries(fake_k_roll
 add_executable(kinect_to_robot_tf src/kinect_to_robot.cpp)
 target_link_libraries( kinect_to_robot_tf  ${catkin_LIBRARIES})
 
+add_executable(kinect_to_skeleton_tf src/kinect_to_skeleton.cpp)
+target_link_libraries( kinect_to_skeleton_tf  ${catkin_LIBRARIES})
+
 #add_executable( polycolor src/detector.cpp src/polycolor.cpp src/space.cpp)
 
 #target_link_libraries( polycolor ${OpenCV_LIBS} )

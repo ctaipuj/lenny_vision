@@ -3,20 +3,20 @@
 #include <tf2/LinearMath/Quaternion.h>
 
 int main(int argc, char** argv){
-  ros::init(argc, argv, "kinect_broadcaster");
+  ros::init(argc, argv, "skeleton_tracker_broadcaster");
   ros::NodeHandle node;
 
    tf2_ros::TransformBroadcaster tfb;
   geometry_msgs::TransformStamped transformStamped;
 
  
-  transformStamped.header.frame_id = "kinect";
-  transformStamped.child_frame_id = "kinect_link"; //PARAMETROS PROPIOS DE LA GEOMETRIA DEL KINECT DO NOT CHANGE!
+  transformStamped.header.frame_id = "camera_depth_frame";
+  transformStamped.child_frame_id = "openni_depth_frame"; //PARAMETROS PROPIOS DE LA GEOMETRIA DEL KINECT DO NOT CHANGE!
   transformStamped.transform.translation.x = 0.0;
   transformStamped.transform.translation.y = 0.0;
-  transformStamped.transform.translation.z = 0.05;
+  transformStamped.transform.translation.z = 0.0;
   tf2::Quaternion q;
-        q.setRPY(0 ,0,-1.57);
+        q.setRPY(0 ,0, 0);
   transformStamped.transform.rotation.x = q.x();
   transformStamped.transform.rotation.y = q.y();
   transformStamped.transform.rotation.z = q.z();

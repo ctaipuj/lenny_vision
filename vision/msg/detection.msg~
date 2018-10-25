@@ -1,4 +1,0 @@
-geometry_msgs/TransformStamped T
-float64 height
-float64 width
-int32 type

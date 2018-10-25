@@ -28,13 +28,15 @@ class ImageConverter{
 
   cv::Mat A_color;
   cv::Mat B_depth;
+  int k_roll;
   
   ros::NodeHandle nh_;
   image_transport::ImageTransport it_;
   image_transport::Subscriber image_sub_color;
   image_transport::Subscriber image_sub_depth;
   //image_transport::Publisher image_pub_;
-  ros::Publisher pub;// = node.advertise<transformation::detection>("algorithm_data", 1000); 
+  ros::Publisher pub_right;// = node.advertise<transformation::detection>("algorithm_data", 1000); 
+  ros::Publisher pub_left;
   ros::Subscriber sub;
 
 public:
@@ -57,6 +59,8 @@ public:
   void publisher(std::vector<std::vector<double> > &data_to_ros);
   
   std::vector<double> selector(std::vector<std::vector<double> > data_to_ros);
+  
+  geometry_msgs::PoseStamped find_transformation(std::vector<double> message);
 };
 
 #endif

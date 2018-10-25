@@ -4,38 +4,26 @@
 
 #include<boost/assign/std/vector.hpp>
 
-int k_roll=1;
-std::ofstream myfile;
-
-	//tf2_ros::Buffer tfBuffer;
-	//tf2_ros::TransformListener tfListener(tfBuffer);
-
 ImageConverter::ImageConverter()
 	: it_(nh_)
 {
 	// Subscribe to input video feed and publish output video feed
-	image_sub_color = it_.subscribe("/camera/rgb/image_color", 1, &ImageConverter::kinect_color_callback, this);
-	image_sub_depth = it_.subscribe("/camera/depth_registered/image", 1, &ImageConverter::kinect_depth_callback, this);
-	sub = nh_.subscribe("/fake_k_roll", 30,  &ImageConverter::lenny_asks_callback,this); ///pick_and_place/command
+	image_sub_color = it_.subscribe("/kinect/rgb/image_color", 1, &ImageConverter::kinect_color_callback, this);
+	image_sub_depth = it_.subscribe("/kinect/depth_registered/image", 1, &ImageConverter::kinect_depth_callback, this);
+	sub = nh_.subscribe("pick_and_place/command", 30,  &ImageConverter::lenny_asks_callback,this); ///pick_and_place/command
 	
-	pub= nh_.advertise<vision::bottle_data>("vision/bottle_data", 50);
+	pub_right= nh_.advertise<vision::bottle_data>("vision/bottle_data_arm_right", 50);
+	ros::Duration(0.5).sleep();
+	pub_left= nh_.advertise<vision::bottle_data>("vision/bottle_data_arm_left", 50);
+	ros::Duration(0.5).sleep();
 	
 	cv::namedWindow("Color Image",CV_WINDOW_NORMAL);
-	/*myfile.open("data.txt",std::ios::app);
-	if(!myfile.is_open()){
-		ROS_WARN("Something went wrong with the data.txt file");
-		return;
-	}
-	time_t now=time(0);
-	char* dt=ctime(&now);
-	std::string date=dt;*/ //UNCOMMENT FOR DATA ARCHIVE
-	//myfile<<date<<"X,Y,Z,w,x,y,z,Height,Width,Type\n";
+	k_roll=1;
 }
 
 ImageConverter::~ImageConverter(){
 
 	cv::destroyWindow("Color Image");
-	myfile.close();
 }
 
 void ImageConverter::lenny_asks_callback(const std_msgs::UInt32& msg){
@@ -57,7 +45,6 @@ void ImageConverter::kinect_color_callback(const sensor_msgs::ImageConstPtr& col
 	}
 
 	cv::imshow("Color Image", cv_ptr_color->image);
-	////////////cv::waitKey(3);
 	// Output modified video stream
 	//image_pub_.publish(cv_ptr_color->toImageMsg());
 	A_color=cv_ptr_color->image;
@@ -81,10 +68,9 @@ void ImageConverter::kinect_depth_callback(const sensor_msgs::ImageConstPtr& dep
 	if(k_roll!=0){
 	ROS_INFO("\e[1m  Time before processing \e[0m");
 	double secs_before =ros::Time::now().toSec();
-	computer_vision(data_to_ros);
+	computer_vision(data_to_ros); //ACA SE PROCESA Todo
 	double secs_after=ros::Time::now().toSec();
 	ROS_INFO("\e[1m Elapsed time %f and the FPS processed are %f \e[0m",secs_after-secs_before,1/(secs_after-secs_before));
-	//myfile<<"Elapsed time "<<secs_after-secs_before<<" FPS processed "<<1/(secs_after-secs_before)<<"\n"; //UNCOMMENT
 	publisher(data_to_ros);
 	}
 	
@@ -97,84 +83,41 @@ void ImageConverter::publisher(std::vector<std::vector<double> > &data_to_ros){
 		return;
 	}
 	char key=0;
-	//tf2_ros::TransformListener tfListener(tfBuffer);
-	//tf2_ros::TransformListener tfListener2(tfBuffer);
 
-	vision::bottle_data msg;
-	//geometry_msgs::PoseStamped kinect_frame_data;
-	geometry_msgs::Pose kinect_frame_data;
-	geometry_msgs::Pose transformed;
+	vision::bottle_data msg_left;
+	vision::bottle_data msg_right;
 	
-	geometry_msgs::PoseStamped transformed_pose;
-	//geometry_msgs::TransformStamped base_link_to_base_kinect_tf;
-	tf::StampedTransform transform1;
-	tf::StampedTransform transform2;
+	std::vector<double> message_left(data_to_ros[0].size());
+	std::vector<double> message_right(data_to_ros[0].size());
 	
-	std::vector<double> message(data_to_ros[0].size());
-	message= selector(data_to_ros);
+	message_left= selector(data_to_ros);
 	
-	//kinect_frame_data.header.stamp = ros::Time::now();
-	//kinect_frame_data.header.frame_id = "camera_rgb_optical_frame";
-	
-	transformed_pose.header.stamp = ros::Time::now();
-	transformed_pose.header.frame_id = "camera_rgb_optical_frame";
+	msg_left.P=find_transformation(message_left);
 		
-	/*kinect_frame_data.pose.position.x = message[0];
-	kinect_frame_data.pose.position.y = message[1];
-	kinect_frame_data.pose.position.z = message[2];
-	
-	kinect_frame_data.pose.orientation.x = message[3];
-	kinect_frame_data.pose.orientation.y = message[4];
-	kinect_frame_data.pose.orientation.z = message[5];
-	kinect_frame_data.pose.orientation.w = message[6];*/
-	
-	kinect_frame_data.position.x = message[0];
-	kinect_frame_data.position.y = message[1];
-	kinect_frame_data.position.z = message[2];
-	
-	kinect_frame_data.orientation.x = message[3];
-	kinect_frame_data.orientation.y = message[4];
-	kinect_frame_data.orientation.z = message[5];
-	kinect_frame_data.orientation.w = message[6];
-	
-	 try {
-	//base_link_to_base_kinect_tf = tfBuffer.lookupTransform("base_link", "kinect", ros::Time::now(),ros::Duration(3.0));
-	transform_listener_ptr->waitForTransform("kinect", "camera_rgb_optical_frame", ros::Time::now(),ros::Duration(3.0));
-	transform_listener_ptr->lookupTransform("kinect", "camera_rgb_optical_frame", ros::Time(0),transform2);
-	
-	transform_listener_ptr->waitForTransform("kinect", "camera_rgb_optical_frame", ros::Time::now(),ros::Duration(3.0));
-	transform_listener_ptr->lookupTransform("torso_base_link", "kinect", ros::Time(0),transform1);
-	
-	tf::Transform in,out;
-	tf::poseMsgToTF(kinect_frame_data,in);
-	
-	out=transform1*transform2*in;
-	
-	tf::poseTFToMsg(out,transformed);
-	
-	transformed_pose.pose=transformed;
-	
-            //std::cout << transformStamped << std::endl;
-            //tf2::doTransform(kinect_frame_data,transformed_pose,base_link_to_base_kinect_tf);
-
-//          pcl_ros::transformPointCloud("robotarm", cloud_in, cloud_out, tfListener);
-
-        } catch (tf2::TransformException &ex) {
-            ROS_WARN("%s", ex.what());
-            ros::Duration(1.0).sleep();
-        }
-	msg.P=transformed_pose;
+	msg_left.length=message_left[7];
+	msg_left.width=message_left[8];
 		
-	msg.length=message[7];
-	msg.width=message[8];
+	msg_left.type=message_left[9];
+	
+	if(data_to_ros.size()>1){
 		
-	msg.type=message[9];
+		message_right=selector(data_to_ros);
 		
+		msg_right.P=find_transformation(message_right);
+		
+		msg_right.length=message_right[7];
+		msg_right.width=message_right[8];
+		
+		msg_right.type=message_right[9];
+	}		
 		//tfb.sendTransform(msg.T);
 	ROS_WARN("Press a key to publish the message to Lenny. (Verification Step)");
 	cv::waitKey(0);
 	ROS_INFO("Message succesfully Published.....");
-	pub.publish(msg);
+	pub_left.publish(msg_left);
+	if(data_to_ros.size()>1){
+		pub_right.publish(msg_right);
+	}
 }
 	
 std::vector<double> ImageConverter::selector(std::vector<std::vector<double> > data_to_ros){
@@ -203,6 +146,50 @@ std::vector<double> ImageConverter::selector(std::vector<std::vector<double> > d
 		}
 	}
 	return message;
+}
+
+geometry_msgs::PoseStamped ImageConverter::find_transformation(std::vector<double> message){
+	
+	geometry_msgs::Pose kinect_frame_data;
+	geometry_msgs::Pose transformed;
+	geometry_msgs::PoseStamped transformed_pose;
+	
+	tf::StampedTransform transform1;
+	tf::StampedTransform transform2;
+	
+	transformed_pose.header.stamp = ros::Time::now();
+	transformed_pose.header.frame_id = "camera_rgb_optical_frame";
+	
+	kinect_frame_data.position.x = message[0];
+	kinect_frame_data.position.y = message[1];
+	kinect_frame_data.position.z = message[2];
+	
+	kinect_frame_data.orientation.x = message[3];
+	kinect_frame_data.orientation.y = message[4];
+	kinect_frame_data.orientation.z = message[5];
+	kinect_frame_data.orientation.w = message[6];
+	
+	try {
+	transform_listener_ptr->waitForTransform("kinect", "kinect_rgb_optical_frame", ros::Time::now(),ros::Duration(3.0));
+	transform_listener_ptr->lookupTransform("kinect", "kinect_rgb_optical_frame", ros::Time(0),transform2);
+	
+	transform_listener_ptr->waitForTransform("kinect", "kinect_rgb_optical_frame", ros::Time::now(),ros::Duration(3.0));
+	transform_listener_ptr->lookupTransform("torso_base_link", "kinect", ros::Time(0),transform1);
+	
+	tf::Transform in,out;
+	tf::poseMsgToTF(kinect_frame_data,in);
+	
+	out=transform1*transform2*in;
+	
+	tf::poseTFToMsg(out,transformed);
+	
+	transformed_pose.pose=transformed;
+	
+        } catch (tf2::TransformException &ex) {
+            ROS_WARN("%s", ex.what());
+            ros::Duration(1.0).sleep();
+        }
+     return transformed_pose;
 }
 
 void ImageConverter::computer_vision(std::vector<std::vector<double> > &data_to_ros){
