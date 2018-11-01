@@ -39,6 +39,7 @@ INCLUDE_DIRS include
    CATKIN_DEPENDS 
      roscpp 
      message_runtime
+     message_generation
 )
 
 

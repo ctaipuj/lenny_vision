@@ -67,6 +67,7 @@
   <run_depend>tf2</run_depend>
   <run_depend>tf2_ros</run_depend>
   <run_depend>message_runtime</run_depend>
+  <run_depend>message_generation</run_depend>
   
   <run_depend>tf_conversions</run_depend>
 

@@ -13,10 +13,10 @@
   
   <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure"/>
   
-  <node name="bins_tracker" pkg="fake_pack" type="bins_tracker"/>
+  <node name="bins_tracker" pkg="objects_tracking" type="bins_tracker"/>
   
-  <node name="bottle_publisher" pkg="fake_pack" type="bottle_publisher"/>
+  <node name="bottle_publisher" pkg="objects_tracking" type="bottle_publisher"/>
   
-  <node name="bottle_tf_publisher" pkg="fake_pack" type="bottle_tf_publisher"/>
+  <node name="bottle_tf_publisher" pkg="objects_tracking" type="bottle_tf_publisher"/>
   
 </launch>
