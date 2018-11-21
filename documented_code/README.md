@@ -2,6 +2,7 @@
 # Documented Code 
 
 ## Overview
+
 ### PIR-project @ CTAI-PUJ
 
 PIR project was conceived in 2016 as a long-term research initiative at CTAI (Centro Tecnológico de Automatización Industrial), focused on conducting research on the technical aspect of the collaborative and flexibility concepts of Co-ROBOTs in the industry. We aim to create a framework where we will develop the software and hardware required for the human-machine interaction in an industrial environment *(collaborative concept)*; and that provides flexibility to the same robot to work in different tasks, by incorporating perception and intelligence to the robot *(flexibility concept)*.
@@ -15,7 +16,7 @@ The system proposed is based on open source software, using the Robot Operating 
 
 ## Documentation
 
-See the documentation.pdf file. The src and include directories containt a read-only version of the computer vision algorithm.
+See the **documentation.pdf** file. The src and include directories containt a read-only version of the computer vision algorithm.
 * `bridge.cpp`
 * `detector.cpp`
 * `image_converter.cpp`
