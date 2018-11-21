@@ -11,7 +11,7 @@ This package contains a computer vision algorithm that classify three types of p
 3. include
 4. src
 
-## Requiremets
+## Requirements
 
 1. [opencv](https://opencv.org/releases.html)
 2. [Avin2's module for Kinect] (https://github.com/avin2/SensorKinect)
