@@ -111,11 +111,7 @@ This launch file runs these nodes:
 
 Reconfigure the Kinect's driver in order to change image resolution and enable depth registration:
 
-IMAGEN AQUI DE RQT
-
-CHULITO DE DEPTH
-
-CAMBIO DE VGA A SXGA 
+![imagen](https://raw.githubusercontent.com/ctaipuj/lenny_vision/master/vision/rqt_reconfigure.png)
 
 Once the reconfiguration is done you can close the `rqt_reconfigure`window.
 
