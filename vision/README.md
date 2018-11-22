@@ -124,7 +124,7 @@ This node will publish the `vision/bottle_data_arm_right` and `vision/bottle_dat
 To interact with the node follow the instructions shown in console:
 
 Command line Interface:
-![imagen](https://raw.githubusercontent.com/ctaipuj/lenny_vision/master/vision/command_line.png)
+![imagen](https://raw.githubusercontent.com/ctaipuj/lenny_vision/master/vision/commandline.png)
 
 Message Publication:
 ![imagen](https://raw.githubusercontent.com/ctaipuj/lenny_vision/master/vision/publication.png) 
