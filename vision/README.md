@@ -123,9 +123,18 @@ This node will publish the `vision/bottle_data_arm_right` and `vision/bottle_dat
 
 To interact with the node follow the instructions shown in console:
 
-IMAGE HERE
-IMAGE HERE
-IMAGE HRE
+Command line Interface:
+![imagen](https://raw.githubusercontent.com/ctaipuj/lenny_vision/master/vision/command_line.png)
+
+Message Publication:
+![imagen](https://raw.githubusercontent.com/ctaipuj/lenny_vision/master/vision/publication.png) 
+
+### Known Issues
+* Remember to select the image window when pressing the key to continue.
+* Bottles IDs are also printed in the *detected bottles* window.
+* For unknown reasons in the first attempt it is neccesary to write the object ID twice.
+* The first message published is published to the left arm the second one is the command for the right one.
+* The node will wait until the robot finishes its execution. If something goes wrong with the robot you will have to kill the node.
 
 ### NOTE
 
