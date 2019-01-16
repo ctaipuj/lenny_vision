@@ -21,8 +21,13 @@ See the **documentation.pdf** file. The src and include directories containt a r
 * `detector.cpp`
 * `image_converter.cpp`
 * `polycolor.cpp`
+
 Are the files in which the computer vision algorithm was written.
 
+***
+![imagen](https://bit.ly/2QOK5D6)  
+Keep up with CTAI new developments! Watch our [YouTube Channel](https://www.youtube.com/channel/UC06RetpipAkfxl98UfEc21w). 
+Don't forget to subscribe!
 ***
 *Created by Nicolas Barrero May 2018*  
 *Modified by Nicolas Barrero Nov 2018*  
