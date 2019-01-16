@@ -17,11 +17,21 @@ Main package for the computer vision algorithm.
 4. kinect_cal.yaml  
 Intrinsic calibration parameters for the Kinect sensor, used with *openni launch* package.
 
+## Video
+
+Computer vision application for waste classification task.
+
+[![video](https://img.youtube.com/vi/unnmYN4LatE/0.jpg)](https://www.youtube.com/watch?v=unnmYN4LatE)
+
 ## NOTE
 
 * Please see [Vision](https://github.com/ctaipuj/lenny_vision/tree/master/vision) for usage and other requirements.
 * When using a kinect sensor it is necessary to use [avin2's plugin](https://github.com/avin2/SensorKinect). Find more information [here](http://blog.justsophie.com/installing-kinect-nite-drivers-on-ubuntu-14-04-and-ros-indigo/) and [here](https://docs.opencv.org/2.4/doc/user_guide/ug_kinect.html) about Kinect installation.
 
+***
+![imagen](https://bit.ly/2QOK5D6)  
+Keep up with CTAI new developments! Watch our [YouTube Channel](https://www.youtube.com/channel/UC06RetpipAkfxl98UfEc21w). 
+Don't forget to subscribe!
 ***
 *Created by Nicolas Barrero May 2018*  
 *Modified by Nicolas Barrero Nov 2018*  
