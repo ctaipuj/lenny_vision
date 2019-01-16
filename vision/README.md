@@ -142,8 +142,10 @@ Message Publication:
 * Usually the windows of OpenCV will go dark. It is okay since keyboard interaction with the system is required.
 * The computer vision algorithm assumes the robot is "left-handed" so the first message goes to the left arm and the second message goes to the right arm. 
 
-
-
+***
+![imagen](https://bit.ly/2QOK5D6)  
+Keep up with CTAI new developments! Watch our [YouTube Channel](https://www.youtube.com/channel/UC06RetpipAkfxl98UfEc21w). 
+Don't forget to subscribe!
 ***
 *Created by Nicolas Barrero May 2018*  
 *Modified by Nicolas Barrero Nov 2018*  
